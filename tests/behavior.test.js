@@ -315,7 +315,13 @@ async function run() {
 	);
 	check('引用本地 main.js', /src="assets\/js\/main\.js"/.test(html), true);
 	check('index.html 不含 console.log 调试残留', /console\.log/.test(html), false);
-	check('远端脚本仅剩广告位', (html.match(/<script[^>]*\bsrc="https?:[^"]+"/gi) || []).length, 1);
+	/* 个人主页不接广告：确保第三方脚本(广告/统计)不会被重新引入 */
+	check('无任何第三方脚本', (html.match(/<script[^>]*\bsrc="https?:[^"]+"/gi) || []).length, 0);
+	check(
+		'无广告代码残留',
+		!/adsbygoogle|googlesyndication|pagead|ad-client|googletagmanager|google-analytics/i.test(html),
+		true
+	);
 	check('index.html 不再引用远端反调试 CDN', html.includes('cdn.jsdelivr.net'), false);
 	check(
 		'反调试库已本地化',
