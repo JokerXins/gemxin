@@ -222,11 +222,11 @@ async function run() {
 		await realClick('[data-copy]');
 		await sleep(500);
 		check(
-			'剪贴板内容为邮箱地址',
+			'剪贴板内容与 data-copy 一致',
 			await cdp.evaluate(
 				'navigator.clipboard.readText().catch(function (e) { return "ERR:" + e.name; })'
 			),
-			'3333339770@qq.com'
+			await cdp.evaluate('document.querySelector("[data-copy]").dataset.copy')
 		);
 		check(
 			'按钮进入成功态',
@@ -333,14 +333,24 @@ async function run() {
 		);
 
 		section('6. 控制台与网络健康度');
-		const consoleErrors = cdp.events.filter(
-			(e) =>
-				e.method === 'Runtime.exceptionThrown' ||
-				(e.method === 'Runtime.consoleAPICalled' && e.params.type === 'error') ||
-				(e.method === 'Log.entryAdded' && e.params.entry.level === 'error')
-		);
+		/* 第三方字体 CDN 的网络失败(离线/被墙/SSL 拦截)不算代码缺陷:
+		   字体挂了页面仍正常降级到系统字体,不该让门禁变红。
+		   这里只对「本站资源」与「JS 异常」严格。 */
+		const THIRD_PARTY = /fonts\.(googleapis|gstatic)\.com/;
+		const consoleErrors = cdp.events.filter((e) => {
+			if (e.method === 'Runtime.exceptionThrown') {
+				return true;
+			}
+			if (e.method === 'Runtime.consoleAPICalled' && e.params.type === 'error') {
+				return true;
+			}
+			if (e.method === 'Log.entryAdded' && e.params.entry.level === 'error') {
+				return !THIRD_PARTY.test(e.params.entry.url || '');
+			}
+			return false;
+		});
 		check(
-			'无 JS 异常 / error 日志',
+			'无 JS 异常 / 本站 error 日志',
 			JSON.stringify(consoleErrors.map((e) => JSON.stringify(e.params).slice(0, 200))),
 			'[]'
 		);

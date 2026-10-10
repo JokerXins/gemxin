@@ -204,7 +204,17 @@ async function run() {
 	window.__copies.length = 0;
 	click(copyBtn, window);
 	await tick(20);
-	check('调用 clipboard.writeText', window.__copies.join('|'), '3333339770@qq.com');
+	/* 期望值从页面元素读取,换邮箱只需改 index.html 一处 */
+	check(
+		'调用 clipboard.writeText 且内容与 data-copy 一致',
+		window.__copies.join('|'),
+		copyBtn.dataset.copy
+	);
+	check(
+		'data-copy 是合法邮箱格式',
+		/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(copyBtn.dataset.copy),
+		true
+	);
 	check('按钮出现 is-done', copyBtn.classList.contains('is-done'), true);
 	check('成功时不残留 is-fail', copyBtn.classList.contains('is-fail'), false);
 	check('文案变为已复制', copyLabel.textContent, '已复制到剪贴板');
@@ -314,6 +324,18 @@ async function run() {
 		true
 	);
 	check('引用本地 main.js', /src="assets\/js\/main\.js"/.test(html), true);
+	/* 邮箱三处必须一致:显示文本 / 复制的 data-copy / mailto 链接 */
+	{
+		const mailBox = doc.getElementById('myModal3');
+		const shown = mailBox.querySelector('.mail-addr').textContent.trim();
+		const copyable = mailBox.querySelector('[data-copy]').dataset.copy;
+		const mailed = (mailBox.querySelector('.mail-alt a').getAttribute('href') || '').replace(
+			/^mailto:/,
+			''
+		);
+		check('显示地址与 data-copy 一致', shown, copyable);
+		check('mailto 链接与 data-copy 一致', mailed, copyable);
+	}
 	/* 文案不得假设用户设备:手机用户同样会看到这段说明 */
 	check(
 		'弹窗文案不含设备假设(电脑/手机/PC)',
@@ -325,7 +347,9 @@ async function run() {
 	check('无任何第三方脚本', (html.match(/<script[^>]*\bsrc="https?:[^"]+"/gi) || []).length, 0);
 	check(
 		'无广告代码残留',
-		!/adsbygoogle|googlesyndication|pagead|ad-client|googletagmanager|google-analytics/i.test(html),
+		!/adsbygoogle|googlesyndication|pagead|ad-client|googletagmanager|google-analytics/i.test(
+			html
+		),
 		true
 	);
 	check('index.html 不再引用远端反调试 CDN', html.includes('cdn.jsdelivr.net'), false);
