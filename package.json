@@ -1,0 +1,25 @@
+{
+  "name": "gemxin-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "gemxin.com 个人主页：静态站点 + 开发期质量校验（不参与部署产物）",
+  "scripts": {
+    "test": "npm run lint && npm run test:behavior && npm run test:browser",
+    "test:behavior": "node tests/behavior.test.js",
+    "test:browser": "node tests/browser.test.js",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{js,mjs,json,html,css,md}\"",
+    "format:check": "prettier --check \"**/*.{js,mjs,json,html,css,md}\"",
+    "serve": "python -m http.server 8000"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.0",
+    "eslint": "^10.0.0",
+    "globals": "^16.0.0",
+    "jsdom": "^30.0.0",
+    "prettier": "^3.9.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

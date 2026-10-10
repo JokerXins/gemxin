@@ -1,0 +1,26 @@
+node_modules/
+package-lock.json
+
+# ── 第三方库：原样引入，不参与格式化 ──────────────────────────────
+assets/js/vendor/
+assets/css/fontawesome-all.min.css
+assets/css/font-awesome.min.css
+
+# ── 上游模板源码/产物：本站未引用，保持原样便于对照 ──────────────
+assets/sass/
+assets/css/style.css
+
+# ── 既有手工排版的页面文件：刻意不交给 Prettier ──────────────────
+# 原因：这些文件沿用上游 HTML5 UP 的 Tab + 单行守卫(closing brace on same line)
+# 风格，Prettier 会把 CSS reset 从 609 行摊到 852 行、把 index.html 全部重排，
+# 属于纯格式churn 且会淹没真实改动。
+# 约定：prettier 只管「新增文件」与配置文件；这几个存量文件在下次做样式重构时
+# 再一次性交给 --write 统一。若要立即统一，删除下面几行后执行 npm run format 即可。
+index.html
+assets/css/main.css
+assets/css/noscript.css
+assets/js/main.js
+assets/js/anti-debug.js
+
+# 备份与工作记录
+.workbuddy/

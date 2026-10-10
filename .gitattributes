@@ -1,0 +1,31 @@
+# 换行符与二进制文件约定
+# 作用：无论谁在什么系统上克隆，仓库内文本文件统一以 LF 存储，
+#       避免 Windows 检出生成的 CRLF 在提交时把整份文件标成「全文件改动」。
+
+* text=auto eol=lf
+
+# 二进制：禁止任何换行符转换与文本 diff
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+
+# SVG 是文本，但要保留原样
+*.svg text eol=lf
+
+# 明确按 LF 处理
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.mjs text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.scss text eol=lf
+*.xml text eol=lf
