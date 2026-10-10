@@ -1,8 +1,9 @@
 # gemxin.com · 阿鑫的个人主页
 
-单页个人主页，蓝天云海视觉，用于集中展示联系方式。
+单页个人主页，蓝天渐变视觉（纯 CSS 实现，无云层贴图），用于集中展示联系方式。
 
 **在线地址**：https://gemxin.com
+**代码仓库**：https://github.com/JokerXins/gemxin
 
 ## 技术栈
 
@@ -16,9 +17,12 @@
 
 ```
 index.html          页面（含弹窗逻辑）
+favicon.ico         站点图标
 robots.txt          搜索引擎抓取规则
 sitemap.xml         站点地图
 CNAME               自定义域名
+README.md           本文件
+LICENSE.txt         模板许可协议
 assets/css/         样式（main.css 为本站定制样式）
 assets/webfonts/    Font Awesome 5 字体
 assets/fonts/       模板自带字体
@@ -36,12 +40,12 @@ python -m http.server 8000
 
 ## 部署
 
-推送到 `master` 分支后由 GitHub Pages 自动构建，约 1~2 分钟生效。
+推送到 `main` 分支后由 GitHub Pages 自动构建，约 1~2 分钟生效。
 
 ```bash
 git add -A
 git commit -m "描述改动"
-git push origin master
+git push origin main
 ```
 
 ## 许可
