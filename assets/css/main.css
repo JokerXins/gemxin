@@ -367,6 +367,12 @@ a:hover { border-color: transparent; }
 /*
 	可见性由两段控制：hidden 属性决定「是否渲染」，.is-open 类决定「是否显示」。
 	两者都在 assets/js/main.js 中同步维护。
+
+	刻意不用 backdrop-filter 做磨砂玻璃：全屏 backdrop-filter 是 Chromium 已知的绘制
+	不一致/闪烁来源（crbug.com/366415129、crbug.com/448789651），在 1.5 倍缩放（Windows
+	150%）的显示器上，模糊区域会出现一道横贯全屏的接缝，鼠标一动就闪现；它同时还是整页最
+	贵的一次合成。实测去掉后背景平均亮度只差 0.02 灰阶（模糊并不改变均值），只是颗粒纹理
+	不再被糊平；0.72 的深色蒙层本身已足够压住背景。
 */
 .modal {
 	display: none;
@@ -375,8 +381,6 @@ a:hover { border-color: transparent; }
 	z-index: 100;
 	overflow: auto;
 	background-color: rgba(10, 34, 48, 0.72);
-	-webkit-backdrop-filter: blur(6px);
-	backdrop-filter: blur(6px);
 	justify-content: center;
 	align-items: center;
 	animation: fadeIn 0.26s ease;
