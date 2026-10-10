@@ -1,0 +1,13 @@
+# 工作目录（备份 + 工作日志，不进公开仓库）
+.workbuddy/
+
+# 系统 / 编辑器噪声
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+
+# 编辑器配置
+.vscode/
+.idea/
