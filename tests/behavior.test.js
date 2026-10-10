@@ -335,6 +335,16 @@ async function run() {
 		);
 		check('显示地址与 data-copy 一致', shown, copyable);
 		check('mailto 链接与 data-copy 一致', mailed, copyable);
+
+		/* mailto 在手机上常因未配置邮件应用而无法唤起,
+		   因此文案必须①不假设设备 ②说清"需要先配置"这个前提 */
+		const altLabel = mailBox.querySelector('.mail-alt a').textContent;
+		check(
+			'mailto 文案不假设设备(电脑/手机/PC/客户端)',
+			!/(电脑|手机|PC端|桌面端|客户端)/.test(altLabel),
+			true
+		);
+		check('mailto 文案说明需先配置邮件应用', altLabel.includes('已配置邮件应用'), true);
 	}
 	/* 文案不得假设用户设备:手机用户同样会看到这段说明 */
 	check(
