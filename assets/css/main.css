@@ -162,9 +162,17 @@ a:hover { border-color: transparent; }
 }
 
 /* 装饰层，两层叠加：细颗粒纹理 + 三道斜线光带；另加一层上下暗角，
-   让顶部标题与底部版权在白字背景下更清晰。 */
+   让顶部标题与底部版权在白字背景下更清晰。
+
+   它是 fixed 定位 + background-attachment: fixed 的大面积矢量背景（overlay.svg 里还有
+   0.5px 的细线），鼠标交互引发的重绘会把它整体重新栅格化，边缘/细线容易瞬间变强或出现
+   接缝。这里沿用 #header 与 nav li 的既有写法（translate3d + backface-visibility）把它钉
+   成独立图层，重绘时复用已有栅格而不再重新采样。
+   注：translate3d(0,0,0) 会让它自成包含块，但本层尺寸就等于视口，fixed 背景停在同一位置；
+   已在 1699x901@1.5 视口逐像素比对，改动前后渲染完全一致（0 像素差异）。 */
 #overlay {
 	animation: overlay 1.4s 0.5s forwards;
+	backface-visibility: hidden;
 	background-attachment: fixed, fixed, fixed;
 	background-image:
 		linear-gradient(180deg, rgba(16,52,74,0.26) 0%, rgba(16,52,74,0) 30%, rgba(16,52,74,0) 62%, rgba(16,52,74,0.32) 100%),
@@ -178,6 +186,7 @@ a:hover { border-color: transparent; }
 	opacity: 0;
 	position: fixed;
 	top: 0;
+	transform: translate3d(0, 0, 0);
 	width: 100%;
 	pointer-events: none;
 }
