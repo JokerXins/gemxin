@@ -1,13 +1,25 @@
 /*
-	aboutx.top — 阿鑫个人主页
+	gemxin.com — 阿鑫个人主页
 	基于 Aerial by HTML5 UP (html5up.net | @ajlkn) 深度定制
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 
 	设计调性：蓝天 + 纯白文字，清爽开阔、克制精致
-	注意：Google Fonts 已改由 index.html 的 <link> 引入（避免 @import 串行阻塞渲染）。
+
+	阅读顺序：
+	  1. Reset / Basic        基础复位与排版
+	  2. Accessibility        焦点环、降低动效
+	  3. Icon / Preload       字体图标、首屏防闪烁
+	  4. Layout               wrapper / overlay / main / header / footer
+	  5. Modal                弹窗骨架 + 公众号二维码弹窗
+	  6. Modal (mail)         邮箱弹窗与一键复制按钮
+	  7. Responsive           断点收敛（宽屏 / 常规 / 移动端 / 窄屏）
+
+	约定：现代浏览器(Chrome 88+ / Safari 15.4+ / Firefox 89+)，
+	      已移除 -moz-* 与无必要的 -webkit-* 前缀；backdrop-filter 保留双写。
+	      Google Fonts 由 index.html 的 <link> 引入，避免 @import 串行阻塞渲染。
 */
 
-/* ─────────────────────────────  Reset  ───────────────────────────── */
+/* ═══════════════════════════════  1. Reset  ═══════════════════════════════ */
 
 html, body, div, span, applet, object,
 iframe, h1, h2, h3, h4, h5, h6, p, blockquote,
@@ -29,9 +41,7 @@ section, summary, time, mark, audio, video {
 }
 
 article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
+footer, header, hgroup, menu, nav, section { display: block; }
 
 body { line-height: 1; }
 
@@ -51,7 +61,7 @@ input::-moz-focus-inner { border: 0; padding: 0; }
 
 img { max-width: 100%; height: auto; display: block; }
 
-/* ─────────────────────────────  Basic  ───────────────────────────── */
+/* ═══════════════════════════════  Basic  ═══════════════════════════════ */
 
 html { box-sizing: border-box; }
 *, *:before, *:after { box-sizing: inherit; }
@@ -78,8 +88,6 @@ body {
 }
 
 a {
-	-moz-transition: border-color 0.2s ease-in-out, color 0.2s ease-in-out;
-	-webkit-transition: border-color 0.2s ease-in-out, color 0.2s ease-in-out;
 	transition: border-color 0.2s ease-in-out, color 0.2s ease-in-out;
 	border-bottom: dotted 1px;
 	color: inherit;
@@ -88,14 +96,26 @@ a {
 }
 a:hover { border-color: transparent; }
 
+/* ═══════════════════════════  2. Accessibility  ═══════════════════════════ */
+
 /* 键盘可达性：统一可见焦点环 */
 :focus-visible {
-	outline: 2px solid rgba(255,255,255,0.9);
+	outline: 2px solid rgba(255, 255, 255, 0.9);
 	outline-offset: 4px;
 	border-radius: 2px;
 }
 
-/* ─────────────────────────────  Icon  ───────────────────────────── */
+/* 尊重系统「降低动态效果」设置：动画与过渡立即结束，且不留初始透明态 */
+@media (prefers-reduced-motion: reduce) {
+	*, *:before, *:after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+	#wrapper, #overlay, #header, #header nav li { opacity: 1 !important; }
+}
+
+/* ════════════════════════════  3. Icon  ════════════════════════════ */
 
 .icon {
 	text-decoration: none;
@@ -119,21 +139,14 @@ a:hover { border-color: transparent; }
 .icon.solid:before { font-weight: 900; }
 .icon.brands:before { font-family: 'Font Awesome 5 Brands'; }
 
-/* ─────────────────────────────  Preload 防闪烁  ───────────────────────────── */
-
-/*
-	JS 加载前先隐藏，避免入场动画「闪一下再播」。
-	JS 就绪后移除 .is-preload（见 index.html 脚本），元素随即按各自动画出现。
-	无 JS 时由 noscript.css 强制显示。
-*/
-.is-preload .content,
+/* Preload 防闪烁：JS 就绪后移除 body.is-preload（见 assets/js/main.js），
+   元素随即按各自动画出现；无 JS 时由 noscript.css 强制显示。 */
 .is-preload #header,
 .is-preload #header nav li { opacity: 0; }
 
-/* ─────────────────────────────  Wrapper  ───────────────────────────── */
+/* ════════════════════════════  4. Layout  ════════════════════════════ */
 
 #wrapper {
-	-webkit-animation: wrapper 1.1s forwards;
 	animation: wrapper 1.1s forwards;
 	height: 100%;
 	left: 0;
@@ -144,28 +157,13 @@ a:hover { border-color: transparent; }
 }
 
 @keyframes wrapper {
-	0% { opacity: 0; }
-	100% { opacity: 1; }
+	from { opacity: 0; }
+	to { opacity: 1; }
 }
 
-/* ─────────────────────────────  BG（云层已移除）  ───────────────────────────── */
-
-/*
-	原 Aerial 用 bg.jpg 云海照片横向流动；此前尝试用纯 CSS 重建云层，效果不理想，
-	现按需求整体移除 —— 背景只保留 body 上的蓝天渐变 + #overlay 的对角斜线光带。
-	若要恢复带云版本，见 .workbuddy/backup/main.css.withcloud-* 并还原 HTML 中的 #bg 元素。
-*/
-
-/* ─────────────────────────────  Overlay（装饰层）  ───────────────────────────── */
-
-/*
-	两层装饰（恢复自原始 Aerial）：
-	① overlay-pattern.png —— 平铺的细颗粒纹理，给画面加质感
-	② overlay.svg —— 居中铺满的三道斜线光带（标志性对角光效）
-	另叠加一层上下暗角，让顶部域名与底部版权更清晰。
-*/
+/* 装饰层，两层叠加：细颗粒纹理 + 三道斜线光带；另加一层上下暗角，
+   让顶部标题与底部版权在白字背景下更清晰。 */
 #overlay {
-	-webkit-animation: overlay 1.4s 0.5s forwards;
 	animation: overlay 1.4s 0.5s forwards;
 	background-attachment: fixed, fixed, fixed;
 	background-image:
@@ -185,11 +183,9 @@ a:hover { border-color: transparent; }
 }
 
 @keyframes overlay {
-	0% { opacity: 0; }
-	100% { opacity: 1; }
+	from { opacity: 0; }
+	to { opacity: 1; }
 }
-
-/* ─────────────────────────────  Main  ───────────────────────────── */
 
 #main {
 	height: 100%;
@@ -200,6 +196,7 @@ a:hover { border-color: transparent; }
 	width: 100%;
 }
 
+/* 用 1px 高的幽灵行盒配合 vertical-align 实现垂直居中 */
 #main:before {
 	content: '';
 	display: inline-block;
@@ -209,25 +206,10 @@ a:hover { border-color: transparent; }
 	width: 1px;
 }
 
-/* ─────────────────────────────  Header  ───────────────────────────── */
-
-@keyframes header {
-	0%   { -webkit-transform: translate3d(0,0.9em,0); transform: translate3d(0,0.9em,0); opacity: 0; }
-	100% { -webkit-transform: translate3d(0,0,0);     transform: translate3d(0,0,0);     opacity: 1; }
-}
-
-@keyframes nav-icons {
-	0%   { -webkit-transform: translate3d(0,0.9em,0); transform: translate3d(0,0.9em,0); opacity: 0; }
-	100% { -webkit-transform: translate3d(0,0,0);     transform: translate3d(0,0,0);     opacity: 1; }
-}
-
 #header {
-	-webkit-animation: header 0.9s 0.9s forwards;
 	animation: header 0.9s 0.9s forwards;
-	-webkit-backface-visibility: hidden;
 	backface-visibility: hidden;
-	-webkit-transform: translate3d(0,0,0);
-	transform: translate3d(0,0,0);
+	transform: translate3d(0, 0, 0);
 	cursor: default;
 	display: inline-block;
 	opacity: 0;
@@ -239,43 +221,48 @@ a:hover { border-color: transparent; }
 	max-width: 46em;
 }
 
+@keyframes header {
+	from { transform: translate3d(0, 0.9em, 0); opacity: 0; }
+	to   { transform: translate3d(0, 0, 0);     opacity: 1; }
+}
+
+@keyframes nav-icons {
+	from { transform: translate3d(0, 0.9em, 0); opacity: 0; }
+	to   { transform: translate3d(0, 0, 0);     opacity: 1; }
+}
+
 	#header h1 {
 		font-size: 4.35em;
 		font-weight: 900;
 		letter-spacing: -0.035em;
 		line-height: 1.02em;
-		text-shadow: 0 2px 26px rgba(16,52,74,0.30);
+		text-shadow: 0 2px 26px rgba(16, 52, 74, 0.30);
 	}
 
 	#header p {
 		font-size: 1.25em;
 		font-weight: 300;
-		margin: 0.7em 0 0.25em 0;
+		margin: 0.7em 0 0.25em;
 		opacity: 0.94;
 		letter-spacing: 0.06em;
-		text-shadow: 0 1px 18px rgba(16,52,74,0.28);
+		text-shadow: 0 1px 18px rgba(16, 52, 74, 0.28);
 	}
 
 		/* 标语两侧的装饰圆点 */
 		#header p .dot {
 			display: inline-block;
-			color: rgba(255,255,255,0.72);
+			color: rgba(255, 255, 255, 0.72);
 			font-size: 0.62em;
 			vertical-align: 0.16em;
 			letter-spacing: 0;
 		}
 
-	#header nav {
-		margin: 1.7em 0 0 0;
-	}
+	#header nav { margin: 1.7em 0 0; }
 
 		#header nav li {
-			-webkit-animation: nav-icons 0.55s ease-in-out forwards;
 			animation: nav-icons 0.55s ease-in-out forwards;
-			-webkit-backface-visibility: hidden;
 			backface-visibility: hidden;
-			-webkit-transform: translate3d(0,0,0);
-			transform: translate3d(0,0,0);
+			transform: translate3d(0, 0, 0);
 			display: inline-block;
 			height: 5.35em;
 			line-height: 5.885em;
@@ -285,15 +272,12 @@ a:hover { border-color: transparent; }
 			width: 5.35em;
 		}
 
-			#header nav li:nth-child(1) { -webkit-animation-delay: 1.15s; animation-delay: 1.15s; }
-			#header nav li:nth-child(2) { -webkit-animation-delay: 1.30s; animation-delay: 1.30s; }
-			#header nav li:nth-child(3) { -webkit-animation-delay: 1.45s; animation-delay: 1.45s; }
-			#header nav li:nth-child(4) { -webkit-animation-delay: 1.60s; animation-delay: 1.60s; }
-			#header nav li:nth-child(5) { -webkit-animation-delay: 1.75s; animation-delay: 1.75s; }
-			#header nav li:nth-child(6) { -webkit-animation-delay: 1.90s; animation-delay: 1.90s; }
+			#header nav li:nth-child(1) { animation-delay: 1.15s; }
+			#header nav li:nth-child(2) { animation-delay: 1.30s; }
+			#header nav li:nth-child(3) { animation-delay: 1.45s; }
 
 		#header nav a,
-			#header nav button {
+		#header nav button {
 			-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 			-webkit-touch-callout: none;
 			border: 0;
@@ -302,25 +286,22 @@ a:hover { border-color: transparent; }
 		}
 
 		/* button 复位成与 a 一致的外观 */
-			#header nav button {
-				appearance: none;
-				-webkit-appearance: none;
-				background: none;
-				font: inherit;
-				color: inherit;
-				padding: 0;
-			}
+		#header nav button {
+			appearance: none;
+			background: none;
+			font: inherit;
+			color: inherit;
+			padding: 0;
+		}
 
 			#header nav a:before,
 			#header nav button:before {
-				-moz-transition: all 0.24s ease-in-out;
-				-webkit-transition: all 0.24s ease-in-out;
 				transition: all 0.24s ease-in-out;
-				border-radius: 100%;
-				border: solid 1px rgba(255,255,255,0.72);
-				background-color: rgba(255,255,255,0.06);
-				backdrop-filter: blur(2px);
 				-webkit-backdrop-filter: blur(2px);
+				backdrop-filter: blur(2px);
+				border-radius: 100%;
+				border: solid 1px rgba(255, 255, 255, 0.72);
+				background-color: rgba(255, 255, 255, 0.06);
 				display: block;
 				font-size: 1.75em;
 				height: 2.5em;
@@ -329,7 +310,7 @@ a:hover { border-color: transparent; }
 				text-align: center;
 				top: 0;
 				width: 2.5em;
-				box-shadow: 0 6px 20px -10px rgba(16,52,74,0.55);
+				box-shadow: 0 6px 20px -10px rgba(16, 52, 74, 0.55);
 			}
 
 			#header nav a:hover:before,
@@ -337,27 +318,23 @@ a:hover { border-color: transparent; }
 				background-color: rgba(255, 255, 255, 0.22);
 				border-color: #fff;
 				color: #fff;
-				-webkit-transform: translateY(-2px);
 				transform: translateY(-2px);
-				box-shadow: 0 12px 26px -10px rgba(16,52,74,0.7);
+				box-shadow: 0 12px 26px -10px rgba(16, 52, 74, 0.7);
 			}
 
 			#header nav a:active:before,
 			#header nav button:active:before {
 				background-color: rgba(255, 255, 255, 0.35);
 				color: #fff;
-				-webkit-transform: translateY(0);
 				transform: translateY(0);
 			}
 
+			/* 图标由 :before 呈现，文字标签仅供读屏 */
 			#header nav a span,
 			#header nav button span { display: none; }
 
-/* ─────────────────────────────  Footer  ───────────────────────────── */
-
 #footer {
-	background-image: linear-gradient(top, rgba(16,52,74,0), rgba(16,52,74,0.34) 75%);
-	background-image: linear-gradient(180deg, rgba(16,52,74,0) 0%, rgba(16,52,74,0.34) 75%);
+	background-image: linear-gradient(180deg, rgba(16, 52, 74, 0) 0%, rgba(16, 52, 74, 0.34) 75%);
 	bottom: 0;
 	cursor: default;
 	height: 6em;
@@ -376,22 +353,23 @@ a:hover { border-color: transparent; }
 		opacity: 0.72;
 	}
 
-/* ─────────────────────────────  Modal（二维码弹窗）  ───────────────────────────── */
+/* ═══════════════════════════  5. Modal  ═══════════════════════════ */
 
+/*
+	可见性由两段控制：hidden 属性决定「是否渲染」，.is-open 类决定「是否显示」。
+	两者都在 assets/js/main.js 中同步维护。
+*/
 .modal {
 	display: none;
 	position: fixed;
 	inset: 0;
 	z-index: 100;
-	width: 100%;
-	height: 100%;
 	overflow: auto;
-	background-color: rgba(10,34,48,0.72);
+	background-color: rgba(10, 34, 48, 0.72);
 	-webkit-backdrop-filter: blur(6px);
 	backdrop-filter: blur(6px);
 	justify-content: center;
 	align-items: center;
-	-webkit-animation: fadeIn 0.26s ease;
 	animation: fadeIn 0.26s ease;
 }
 
@@ -400,22 +378,24 @@ a:hover { border-color: transparent; }
 
 .modal.is-open { display: flex; }
 
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeIn {
+	from { opacity: 0; }
+	to   { opacity: 1; }
+}
 
 .modal-box {
-	position: relative;                 /* 修正：让 .close 相对弹窗定位 */
+	position: relative;                 /* 让 .close 相对弹窗定位 */
 	margin: auto;
 	padding: 1.5em 1.5em 1.25em;
 	background: #fff;
 	border-radius: 18px;
-	box-shadow: 0 30px 70px -22px rgba(8,26,38,0.75);
-	-webkit-animation: liftIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+	box-shadow: 0 30px 70px -22px rgba(8, 26, 38, 0.75);
 	animation: liftIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes liftIn {
-	from { opacity: 0; -webkit-transform: translateY(14px) scale(0.98); transform: translateY(14px) scale(0.98); }
-	to   { opacity: 1; -webkit-transform: none; transform: none; }
+	from { opacity: 0; transform: translateY(14px) scale(0.98); }
+	to   { opacity: 1; transform: none; }
 }
 
 	.modal-box .mt {
@@ -423,12 +403,11 @@ a:hover { border-color: transparent; }
 		font-size: 0.6em;
 		font-weight: 600;
 		letter-spacing: 0.34em;
-		text-indent: 0.34em;
+		text-indent: 0.34em;             /* 抵消末字符的字距，视觉居中 */
 		text-transform: uppercase;
 		color: #4a8fb5;
 	}
 
-	.modal-box img,
 	.modal-content {
 		display: block;
 		margin: 0 auto;
@@ -442,8 +421,8 @@ a:hover { border-color: transparent; }
 		font-weight: 400;
 		letter-spacing: 0.04em;
 		color: #6b7f8b;
-		line-height: 1.6;              /* 覆盖继承自 body 的固定 30px 行盒：
-		                                  小字号配大行盒会让文字周边出现不对称留白 */
+		line-height: 1.6;                /* 覆盖继承自 body 的 1.75em 行盒：
+		                                    小字号配大行盒会让文字周边出现不对称留白 */
 	}
 
 	.modal .close {
@@ -458,16 +437,17 @@ a:hover { border-color: transparent; }
 		padding: 0;
 		color: #4a8fb5;
 		background: #fff;
-		border: 1px solid rgba(74,143,181,0.28);
+		border: 1px solid rgba(74, 143, 181, 0.28);
 		border-radius: 50%;
 		font-family: inherit;
 		font-size: 1.4em;
 		font-weight: 400;
 		line-height: 1;
 		cursor: pointer;
-		box-shadow: 0 6px 18px -8px rgba(8,26,38,0.5);
+		box-shadow: 0 6px 18px -8px rgba(8, 26, 38, 0.5);
 		transition: background-color 0.22s ease, color 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
 	}
+
 	.modal .close:hover,
 	.modal .close:focus-visible {
 		background: #4a8fb5;
@@ -476,40 +456,7 @@ a:hover { border-color: transparent; }
 		transform: rotate(90deg);
 	}
 
-/* PC / 大屏：固定二维码尺寸（用 min() 保证在小高度视口下不溢出） */
-@media screen and (min-width: 768px) {
-	.modal-box img,
-	.modal-content {
-		/* 10cm 优先，但高度不得超过视口的 62%，避免横屏矮屏被切掉 */
-		width: min(10cm, 62vh);
-		height: min(10cm, 62vh);
-		object-fit: contain;
-	}
-}
-
-/* Mobile / 窄屏 / 矮屏：自适应 */
-@media screen and (max-width: 767px), (max-height: 520px) {
-	.modal-box img,
-	.modal-content {
-		width: min(82vw, 320px, 62vh);
-		height: auto;
-	}
-	/* 矮屏时压缩弹窗内边距与文字间距，保证完整可见 */
-	.modal-box { padding: 1em 1em 0.9em; }
-	.modal-box .mt { margin-bottom: 0.6em; font-size: 0.54em; }
-	.modal-box .mhint { margin-top: 0.6em; font-size: 0.56em; }
-}
-
-/* 极矮屏：进一步收紧 */
-@media (max-height: 420px) {
-	.modal-box img,
-	.modal-content { width: min(76vw, 62vh); }
-	.modal-box { padding: 0.8em 0.9em 0.7em; }
-	.modal-box .mhint { display: none; }
-	.modal .close { top: -10px; right: -10px; width: 32px; height: 32px; }
-}
-
-/* ─────────────────────────  邮箱弹窗（一键复制）  ───────────────────────── */
+/* ═══════════════════════  6. Modal (mail)  ═══════════════════════ */
 
 .modal-box .mail-addr {
 	margin: 0 0 1.1em;
@@ -519,11 +466,10 @@ a:hover { border-color: transparent; }
 	letter-spacing: 0.02em;
 	color: #2a5f7d;
 	background: #f2f8fc;
-	border: 1px dashed rgba(74,143,181,0.45);
+	border: 1px dashed rgba(74, 143, 181, 0.45);
 	border-radius: 10px;
 	text-align: center;
 	word-break: break-all;
-	-webkit-user-select: all;
 	user-select: all;                   /* 便于手动三击全选 */
 }
 
@@ -560,18 +506,17 @@ a:hover { border-color: transparent; }
 }
 
 .modal-box .mail-alt {
-	margin: 0.55em 0 0;                 /* 收紧底部队列：配合 mhint 形成紧凑收尾 */
+	margin: 0.55em 0 0;
 	font-size: 0.6em;
 	letter-spacing: 0.04em;
 	color: #6b7f8b;
-	text-align: center;                  /* 与整体居中排版一致 */
-	line-height: 1.6;                    /* 覆盖全局 30px 行高 —— 小字号不需要那么大的行盒，
-	                                        否则文字周边出现不对称空白（视觉上"底部很空"） */
+	text-align: center;
+	line-height: 1.6;                    /* 同 .mhint：小字号用小行盒收尾更紧凑 */
 }
 .modal-box .mail-alt a {
 	color: #4a8fb5;
 	text-decoration: none;
-	border-bottom: 1px solid rgba(74,143,181,0.4);
+	border-bottom: 1px solid rgba(74, 143, 181, 0.4);
 	transition: color 0.2s ease, border-color 0.2s ease;
 }
 .modal-box .mail-alt a:hover,
@@ -580,25 +525,49 @@ a:hover { border-color: transparent; }
 	border-bottom-color: #2a5f7d;
 }
 
-/* 邮箱弹窗不需要二维码的大尺寸约束 —— 宽度对齐公众号弹窗基准（430px），
-   保持两个弹窗视觉一致；内容紧凑所以用 max-width 而非固定 width */
+/* ═══════════════════════════  7. Responsive  ═══════════════════════════ */
+
+/* 宽屏：固定二维码尺寸；用 min() 保证矮视口下不被切掉 */
 @media screen and (min-width: 768px) {
+	.modal-content {
+		/* 10cm 优先，但高度不得超过视口的 62% */
+		width: min(10cm, 62vh);
+		height: min(10cm, 62vh);
+		object-fit: contain;
+	}
+
+	/* 邮箱弹窗不需要二维码的大尺寸约束：宽度对齐公众号弹窗基准（430px），
+	   保持两个弹窗视觉一致；内容紧凑所以用 max-width 而非固定 width */
 	#myModal3 .modal-box { width: min(20cm, 78vw, 430px); }
 }
 
-/* ─────────────────────────────  Wide  ───────────────────────────── */
+/* 窄屏 / 矮屏：自适应尺寸并收紧间距。
+   上界 767.99px 与上面的 768px 无缝衔接，避免 767.5px 落在两段之间。 */
+@media screen and (max-width: 767.99px), (max-height: 520px) {
+	.modal-content {
+		width: min(82vw, 320px, 62vh);
+		height: auto;
+	}
+	.modal-box { padding: 1em 1em 0.9em; }
+	.modal-box .mt { margin-bottom: 0.6em; font-size: 0.54em; }
+	.modal-box .mhint { margin-top: 0.6em; font-size: 0.56em; }
+}
+
+/* 极矮屏：进一步收紧，并隐藏非必要说明文字 */
+@media (max-height: 420px) {
+	.modal-content { width: min(76vw, 62vh); }
+	.modal-box { padding: 0.8em 0.9em 0.7em; }
+	.modal-box .mhint { display: none; }
+	.modal .close { top: -10px; right: -10px; width: 32px; height: 32px; }
+}
 
 @media screen and (max-width: 1680px) {
-	body, input, select, textarea { font-size: 13pt; }
+	body { font-size: 13pt; }
 }
-
-/* ─────────────────────────────  Normal  ───────────────────────────── */
 
 @media screen and (max-width: 1280px) {
-	body, input, select, textarea { font-size: 12pt; }
+	body { font-size: 12pt; }
 }
-
-/* ─────────────────────────────  Mobile  ───────────────────────────── */
 
 @media screen and (max-width: 736px) {
 	body {
@@ -607,43 +576,34 @@ a:hover { border-color: transparent; }
 	}
 
 	#header { width: 94%; }
-
 	#header h1 {
 		font-size: 2.6em;
 		letter-spacing: -0.02em;
 	}
-
 	#header p { font-size: 1em; }
 
 	#header nav { font-size: 1em; margin-top: 1.4em; }
-
 	#header nav li {
 		height: 4.6em;
 		line-height: 5.0em;
 		width: 4.6em;
 	}
+	/* 圆形图标是 1.75em 的 :before，比 li 的 4.6em 外框还宽 —— 相邻圆几乎贴在一起
+	   （实测仅 3px）。窄屏收一档字级，让圆回到外框之内并拉开间距。 */
+	#header nav a:before,
+	#header nav button:before { font-size: 1.5em; }
 
 	#footer .copyright { font-size: 0.6em; }
 }
 
-/* ─────────────────────────────  Mobile (Portrait)  ───────────────────────────── */
-
 @media screen and (max-width: 480px) {
-
 	#header nav { padding: 0 0.6em; }
-	#header nav li { width: 4.2em; height: 4.2em; line-height: 4.6em; }
-}
-
-/* ─────────────────────────────  无障碍：降低动效  ───────────────────────────── */
-
-@media (prefers-reduced-motion: reduce) {
-	*, *:before, *:after {
-		-webkit-animation-duration: 0.01ms !important;
-		animation-duration: 0.01ms !important;
-		-webkit-animation-iteration-count: 1 !important;
-		animation-iteration-count: 1 !important;
-		-webkit-transition-duration: 0.01ms !important;
-		transition-duration: 0.01ms !important;
+	#header nav li {
+		width: 4.2em;
+		height: 4.2em;
+		line-height: 4.6em;
 	}
-	#header, #header nav li, #wrapper, #overlay { opacity: 1 !important; }
+	/* 同上一档：4.2em 外框对应 1.35em 圆形，相邻圆之间留出约 12px 间隔 */
+	#header nav a:before,
+	#header nav button:before { font-size: 1.35em; }
 }

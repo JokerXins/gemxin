@@ -1,30 +1,30 @@
 <!DOCTYPE HTML>
 <!--
-	aboutx.top — 阿鑫个人主页
+	gemxin.com — 阿鑫个人主页
 	Based on Aerial by HTML5 UP (html5up.net | @ajlkn)
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html lang="zh-CN">
 <head>
 	<title>阿鑫 · 每天都是最好的自己</title>
-	<meta charset="utf-8" />
+	<meta charset="utf-8">
 	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-	<meta name='description' content='每天都是最好的自己'>
-	<meta name='keywords' content='阿鑫,aboutx.top,gemxin,阿鑫主页'>
-	<meta name='robots' content='index,follow'>
-	<meta name="theme-color" content="#348cb2">
-	<link rel="icon" href="/favicon.ico" />
-	<!-- 字体：Google Fonts 用 preconnect + link（比 CSS @import 快，不阻塞渲染） -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<meta name="description" content="每天都是最好的自己">
+	<meta name="keywords" content="阿鑫,gemxin,gemxin.com,阿鑫主页">
+	<meta name="robots" content="index,follow">
+	<meta name="theme-color" content="#2a7ea9">
+	<link rel="icon" href="favicon.ico">
+	<!-- 字体：preconnect + link 引入，避免 CSS @import 串行阻塞渲染 -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;900&display=swap">
-	<!-- 图标字体：显式 link 引入 -->
-	<link rel="stylesheet" href="/assets/css/fontawesome-all.min.css" />
-	<link rel="preload" as="font" type="font/woff2" href="/assets/webfonts/fa-brands-400.woff2" crossorigin>
-	<link rel="preload" as="font" type="font/woff2" href="/assets/webfonts/fa-solid-900.woff2" crossorigin>
-	<link rel="stylesheet" href="/assets/css/main.css" />
-	<noscript><link rel="stylesheet" href="/assets/css/noscript.css" /></noscript>
+	<link rel="stylesheet" href="assets/css/fontawesome-all.min.css">
+	<link rel="preload" as="font" type="font/woff2" href="assets/webfonts/fa-brands-400.woff2" crossorigin>
+	<link rel="preload" as="font" type="font/woff2" href="assets/webfonts/fa-solid-900.woff2" crossorigin>
+	<link rel="stylesheet" href="assets/css/main.css">
+	<noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript>
+	<!-- 广告：Google AdSense -->
 	<script data-ad-client="ca-pub-3236672628766591" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 </head>
 <body class="is-preload">
@@ -32,7 +32,6 @@
 		<div id="overlay" aria-hidden="true"></div>
 		<div id="main">
 
-			<!-- Header -->
 			<header id="header">
 				<h1>阿鑫</h1>
 				<p><span class="dot" aria-hidden="true">&bull;</span>&nbsp;&nbsp;每天都是最好的自己&nbsp;&nbsp;<span class="dot" aria-hidden="true">&bull;</span></p>
@@ -48,17 +47,17 @@
 				</nav>
 			</header>
 
-			<!-- Modal for WeChat Official Account QR Code -->
+			<!-- 公众号二维码弹窗 -->
 			<div id="myModal2" class="modal" role="dialog" aria-modal="true" aria-label="公众号二维码" hidden>
 				<div class="modal-box">
 					<button type="button" class="close" data-close aria-label="关闭">&times;</button>
 					<p class="mt">Scan &middot; WeChat</p>
-					<img class="modal-content" src="/image/WeChat20260623.png" alt="阿鑫的公众号二维码" loading="lazy" decoding="async">
+					<img class="modal-content" src="image/WeChat20260623.png" alt="阿鑫的公众号二维码" loading="lazy" decoding="async">
 					<p class="mhint">扫码关注我的公众号，新内容第一时间推送</p>
 				</div>
 			</div>
 
-			<!-- Modal for Email (一键复制) -->
+			<!-- 邮箱弹窗（一键复制） -->
 			<div id="myModal3" class="modal" role="dialog" aria-modal="true" aria-label="邮箱地址" hidden>
 				<div class="modal-box">
 					<button type="button" class="close" data-close aria-label="关闭">&times;</button>
@@ -72,7 +71,6 @@
 				</div>
 			</div>
 
-			<!-- Footer -->
 			<footer id="footer">
 				<span class="copyright">&copy; 2021 &mdash; 2026 &nbsp;阿鑫 &middot; AXIN</span>
 			</footer>
@@ -80,215 +78,21 @@
 		</div>
 	</div>
 
+	<!-- 页面交互：入场动画、弹窗、复制、移动端手势 -->
+	<script src="assets/js/main.js"></script>
 	<script>
-	(function () {
-		'use strict';
-
-		var doc = document;
-		var lastFocused = null;
-		var openModalEl = null;
-		var FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
-
-		function onLoad() {
-			doc.body.classList.remove('is-preload');
-		}
-		if (doc.readyState === 'complete' || doc.readyState === 'interactive') {
-			window.setTimeout(onLoad, 0);
-		} else {
-			window.addEventListener('DOMContentLoaded', onLoad);
-		}
-
-		function openModal(id, trigger) {
-			var m = doc.getElementById(id);
-			if (!m) { return; }
-			lastFocused = trigger || doc.activeElement;
-			m.removeAttribute('hidden');           /* 先解除 hidden，才能聚焦 */
-			m.classList.add('is-open');
-			openModalEl = m;
-			doc.body.style.overflow = 'hidden';
-
-			var btn = m.querySelector('[data-close]');
-			if (btn) { btn.focus(); }
-		}
-
-		function closeModal(m) {
-			if (!m || !m.classList.contains('is-open')) { return; }
-			m.classList.remove('is-open');
-			m.setAttribute('hidden', '');          /* 隐藏后其内部按钮不再进入 Tab 序列 */
-			if (openModalEl === m) { openModalEl = null; }
-			if (!doc.querySelector('.modal.is-open')) {
-				doc.body.style.overflow = '';
-			}
-			/* 归还焦点：先确认触发元素仍在文档中，避免元素被移除后 focus() 抛错 */
-			if (lastFocused && typeof lastFocused.focus === 'function' && doc.contains(lastFocused)) {
-				lastFocused.focus();
-			}
-			lastFocused = null;
-		}
-
-		/* 统一关闭入口：复用 closeModal，保证「点关闭钮」与「Esc」两条路径
-		   都执行焦点归还 + 解锁滚动（此前 closeAll 漏了焦点归还，导致 Esc
-		   关闭后焦点悬空到 body，键盘用户丢失位置） */
-		function closeAll() {
-			var open = doc.querySelectorAll('.modal.is-open');
-			for (var i = 0; i < open.length; i++) {
-				closeModal(open[i]);
-			}
-		}
-
-		/* 复制到剪贴板：优先 Clipboard API，失败降级 execCommand */
-		function copyText(text) {
-			if (navigator.clipboard && navigator.clipboard.writeText) {
-				return navigator.clipboard.writeText(text).then(function () {
-					return true;
-				}).catch(function () {
-					return fallbackCopy(text);
-				});
-			}
-			return Promise.resolve(fallbackCopy(text));
-		}
-
-		function fallbackCopy(text) {
-			try {
-				var ta = doc.createElement('textarea');
-				ta.value = text;
-				ta.setAttribute('readonly', '');
-				ta.style.position = 'fixed';
-				ta.style.top = '-9999px';
-				ta.style.opacity = '0';
-				doc.body.appendChild(ta);
-				ta.select();
-				ta.setSelectionRange(0, text.length);
-				var ok = doc.execCommand('copy');
-				doc.body.removeChild(ta);
-				return !!ok;
-			} catch (err) {
-				return false;
-			}
-		}
-
-		function handleCopy(btn) {
-			var text = btn.getAttribute('data-copy') || '';
-			var label = btn.querySelector('.mail-copy-label') || btn;
-
-			copyText(text).then(function (ok) {
-				label.textContent = ok ? '已复制到剪贴板' : '复制失败，请手动选中';
-				btn.classList.add(ok ? 'is-done' : 'is-fail');
-				window.clearTimeout(btn._copyTimer);
-				btn._copyTimer = window.setTimeout(function () {
-					label.textContent = '复制邮箱地址';
-					btn.classList.remove('is-done', 'is-fail');
-				}, ok ? 2000 : 3200);
-			});
-		}
-
-		/* 点击：打开 / 关闭 / 点遮罩关闭 / 复制 */
-		doc.addEventListener('click', function (ev) {
-			var t = ev.target;
-			while (t && t !== doc) {
-				if (t.hasAttribute && t.hasAttribute('data-copy')) {
-					ev.preventDefault();
-					handleCopy(t);
-					return;
-				}
-				if (t.hasAttribute && t.hasAttribute('data-modal')) {
-					ev.preventDefault();
-					openModal(t.getAttribute('data-modal'), t);
-					return;
-				}
-				if (t.hasAttribute && t.hasAttribute('data-close')) {
-					closeModal(t.closest('.modal'));
-					return;
-				}
-				t = t.parentNode;
-			}
-			if (ev.target.classList && ev.target.classList.contains('modal')) {
-				closeModal(ev.target);
-			}
-		});
-
-		/* 键盘：Esc 关闭 + Tab 焦点锁定在弹窗内 */
-		doc.addEventListener('keydown', function (ev) {
-			if (ev.key === 'Escape') {
-				closeAll();
-				return;
-			}
-			if (ev.key === 'Tab' && openModalEl) {
-				var items = openModalEl.querySelectorAll(FOCUSABLE);
-				if (!items.length) { return; }
-				var first = items[0];
-				var last = items[items.length - 1];
-				if (ev.shiftKey && doc.activeElement === first) {
-					ev.preventDefault();
-					last.focus();
-				} else if (!ev.shiftKey && doc.activeElement === last) {
-					ev.preventDefault();
-					first.focus();
-				}
-			}
-		});
-
-		/* 移动端：阻止页面整体上下拖拽回弹；弹窗内的滚动容器放行。
-		   判定方式：从事件目标向上找，遇到弹窗或其内部可滚动容器则放行。 */
-		window.addEventListener('touchmove', function (e) {
-			var t = e.target;
-			while (t && t !== doc) {
-				if (t.classList && t.classList.contains('modal')) { return; }
-				t = t.parentNode;
-			}
-			/* 其他区域仍阻止（原行为，防 iOS 整页回弹） */
-			e.preventDefault();
-		}, { passive: false });
-
-		window.addEventListener('orientationchange', function () {
-			window.scrollTo(0, 0);
-		});
-	})();
+	/*
+		首屏看门狗：body 上的 .is-preload 会隐藏首屏元素，等待 main.js 移除。
+		若 main.js 加载失败或被拦截，页面会长时间停在「背景在、内容不出现」的空态。
+		这里兜底：2.5s 后无论如何都解除，保证最坏情况也能看到内容。
+		（采用「不显示任何 loading 文案」的方案：正常情况用户只会看到原有入场动画。）
+	*/
+	window.setTimeout(function () {
+		document.body.classList.remove('is-preload');
+	}, 2500);
 	</script>
-
-	<script>
-		console.log(
-			"%c 阿鑫 %c aboutx.top %c 每天都是最好的自己",
-			"line-height:24px;background:#348cb2;color:#fff;font-size:13px;font-weight:700;letter-spacing:2px;border-radius:3px 0 0 3px;",
-			"line-height:24px;background:#10231C;color:#8fd3f4;font-size:12px;letter-spacing:2px;",
-			"line-height:24px;background:transparent;color:#889;font-size:12px;letter-spacing:1px;"
-		);
-	</script>
-
-	<!--
-		反调试（可选）：
-		原写法用 disable-devtool-auto 属性模式，而该模式默认回调会执行
-		window.close() 并跳转 404 —— 在部分浏览器 / 插件 / 自动化环境下
-		可能误判，直接销毁页面造成白屏。
-		这里改为显式初始化，把 ondevtoolopen 覆盖为「只提示、不破坏」。
-
-		版本号锁定为 0.3.9（不用 @latest）：避免上游发新版改变默认行为后，
-		本站页面在不知情的情况下行为发生变化（供应链风险）。
-		若完全不需要反调试，删掉下面两个 script 标签即可。
-	-->
-	<script src="https://cdn.jsdelivr.net/npm/disable-devtool@0.3.9/disable-devtool.min.js" defer></script>
-	<script>
-		/* defer 脚本执行完即代表 DOM 已就绪；这里做双重保险，
-		   脚本加载失败（CDN 挂了）也不影响页面其余功能。 */
-		function initAntiDebug() {
-			if (typeof window.DisableDevtool === 'function') {
-				window.DisableDevtool({
-					md5: '',
-					url: '',
-					timeOutUrl: '',
-					disableMenu: false,
-					clearIntervalWhenDevOpenTrigger: false,
-					ondevtoolopen: function (type) {
-						console.warn('检测到开发者工具已打开 (type=' + type + ')。');
-					}
-				});
-			}
-		}
-		if (document.readyState === 'loading') {
-			window.addEventListener('DOMContentLoaded', initAntiDebug);
-		} else {
-			initAntiDebug();
-		}
-	</script>
+	<!-- 反调试（可选，删掉下面两行即可移除） -->
+	<script src="assets/js/vendor/disable-devtool.min.js" defer></script>
+	<script src="assets/js/anti-debug.js" defer></script>
 </body>
 </html>
