@@ -314,6 +314,12 @@ async function run() {
 		true
 	);
 	check('引用本地 main.js', /src="assets\/js\/main\.js"/.test(html), true);
+	/* 文案不得假设用户设备:手机用户同样会看到这段说明 */
+	check(
+		'弹窗文案不含设备假设(电脑/手机/PC)',
+		!/(电脑|手机|PC端|桌面端)/.test(doc.getElementById('myModal3').textContent),
+		true
+	);
 	check('index.html 不含 console.log 调试残留', /console\.log/.test(html), false);
 	/* 个人主页不接广告：确保第三方脚本(广告/统计)不会被重新引入 */
 	check('无任何第三方脚本', (html.match(/<script[^>]*\bsrc="https?:[^"]+"/gi) || []).length, 0);
