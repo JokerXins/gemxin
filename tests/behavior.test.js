@@ -336,15 +336,35 @@ async function run() {
 		check('显示地址与 data-copy 一致', shown, copyable);
 		check('mailto 链接与 data-copy 一致', mailed, copyable);
 
-		/* mailto 在手机上常因未配置邮件应用而无法唤起,
-		   因此文案必须①不假设设备 ②说清"需要先配置"这个前提 */
-		const altLabel = mailBox.querySelector('.mail-alt a').textContent;
+		/* mailto 由「该设备是否注册了 mailto 处理程序」决定能否唤起,与手机/电脑无关:
+		   因此文案 ①不假设设备 ②不承诺必然成功。 */
+		const altLink = mailBox.querySelector('.mail-alt a');
+		const altLabel = altLink.textContent;
 		check(
 			'mailto 文案不假设设备(电脑/手机/PC/客户端)',
 			!/(电脑|手机|PC端|桌面端|客户端)/.test(altLabel),
 			true
 		);
 		check('mailto 文案说明需先配置邮件应用', altLabel.includes('已配置邮件应用'), true);
+
+		/* 链接必须是可被系统接管的普通 mailto:——不能被 JS 拦截、
+		   不能新窗口打开,否则移动端唤起逻辑会被破坏 */
+		check('mailto 是纯链接形态', altLink.tagName, 'A');
+		check('mailto 不带 target(避免新窗口破坏唤起)', altLink.hasAttribute('target'), false);
+		check('mailto 不带内联 onclick', altLink.hasAttribute('onclick'), false);
+
+		/* 实际点击:确认没被 preventDefault 吃掉(弹窗的点击委托不能拦它)。
+		   jsdom 不会真的唤起邮件应用,但能验证事件是否被拦截。 */
+		resetScene(doc);
+		click(mailBtn, window); /* 先打开邮箱弹窗 */
+		const mailClick = new window.MouseEvent('click', {
+			bubbles: true,
+			cancelable: true,
+		});
+		altLink.dispatchEvent(mailClick);
+		check('mailto 点击未被 preventDefault 拦截', mailClick.defaultPrevented, false);
+		check('点 mailto 不会误关弹窗', mailBox.classList.contains('is-open'), true);
+		pressKey('Escape', window);
 	}
 	/* 文案不得假设用户设备:手机用户同样会看到这段说明 */
 	check(
